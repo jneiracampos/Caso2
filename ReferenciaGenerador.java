@@ -3,45 +3,59 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 public class ReferenciaGenerador {
-    public static void generarReferencias(int tamPagina, int nf1, int nc1, int nc2) {
-        int tamEntero = 4; // Tamaño de un entero en bytes
-        int elementosPorPagina = tamPagina / tamEntero;
-        int numeroDePaginas = (nf1 * nc1 + nf1 * nc2 + nf1 * nc2) / elementosPorPagina;
+
+    private int nf1;
+    private int nc1;
+    private int nc2;
+    private int tamPagina;
+    private int tamEntero = 4;
+    private int elementosPorPagina;
+
+    public ReferenciaGenerador(int nf1, int nc1, int nc2, int tamPagina) {
+        this.nf1 = nf1;
+        this.nc1 = nc1;
+        this.nc2 = nc2;
+        this.tamPagina = tamPagina;
+    }
+
+    public void generarReferencias() {
+        elementosPorPagina = tamPagina / tamEntero;
+        int numeroDePaginas = (nf1 * nc1 + nc1 * nc2 + nf1 * nc2) / elementosPorPagina;
 
         try (FileWriter fileWriter = new FileWriter("referencias.txt");
              PrintWriter writer = new PrintWriter(fileWriter)) {
 
-            writer.println("TP: " + tamPagina + ", NF: " + nf1 + ", NC1: " + nc1 + ", NC2: " + nc2 +
-                    ", NR: " + (nf1 * nc1 + nf1 * nc2 + nf1 * nc2) + ", NP: " + numeroDePaginas);
+            writer.println("TP=" + tamPagina);
+            writer.println("NF=" + nf1);
+            writer.println("NC1=" + nc1);
+            writer.println("NC2=" + nc2);
+            writer.println("NR=" + ((nc1 + nc2) * nc2) * nf1);
+            writer.println("NP=" + numeroDePaginas);
 
-            // Generar referencias
-            for (int i = 0; i < nf1; i++) {
-                for (int j = 0; j < nc1; j++) {
-                    int pagina = (i * nc1 + j) / elementosPorPagina;
-                    int offset = (i * nc1 + j) % elementosPorPagina;
-                    writer.println("[A(" + i + "," + j + ")] " + pagina + " " + offset);
-                }
-            }
-
-            for (int i = 0; i < nf1; i++) {
-                for (int j = 0; j < nc2; j++) {
-                    int pagina = (nf1 * nc1 + i * nc2 + j) / elementosPorPagina;
-                    int offset = (nf1 * nc1 + i * nc2 + j) % elementosPorPagina;
-                    writer.println("[B(" + i + "," + j + ")] " + pagina + " " + offset);
-                }
-            }
-
-            for (int i = 0; i < nf1; i++) {
-                for (int j = 0; j < nc2; j++) {
-                    int pagina = (2 * nf1 * nc1 + i * nc2 + j) / elementosPorPagina;
-                    int offset = (2 * nf1 * nc1 + i * nc2 + j) % elementosPorPagina;
-                    writer.println("[C(" + i + "," + j + ")] " + pagina + " " + offset);
-                }
-            }
+            MultiplicacionMatrices multiplicacionMatrices = new MultiplicacionMatrices();
+            multiplicacionMatrices.multiplicar_matrices(nf1, nc1, nc2, writer, this);            
 
             System.out.println("Referencias generadas y guardadas en 'referencias.txt'.");
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    public void generarPaginaDesplazamiento(int i, int j, int k, boolean isMatrizC, PrintWriter writer) {
+
+        if (isMatrizC) {
+            int paginaC = ((nf1 * nc1 + nc1 * nc2) + i * nc2 + j) / elementosPorPagina;
+            int offsetC = ((2 * nf1 * nc1 + i * nc2 + j) % elementosPorPagina) * tamEntero;
+            writer.println("[C-" + i + "-" + j + "], " + paginaC + ", " + offsetC);
+        } 
+        else {
+            int paginaA = (i * nc1 + k) / elementosPorPagina;
+            int offsetA = ((i * nc1 + k) % elementosPorPagina) * tamEntero;
+            writer.println("[A-" + i + "-" + k + "], " + paginaA + ", " + offsetA);
+
+            int paginaB = (nf1 * nc1 + k * nc2 + j) / elementosPorPagina;
+            int offsetB = ((nf1 * nc1 + k * nc2 + j) % elementosPorPagina) * tamEntero;
+            writer.println("[B-" + k + "-" + j + "], " + paginaB + ", " + offsetB);
         }
     }
 }
