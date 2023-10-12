@@ -17,10 +17,22 @@ public class UI {
 
             switch (choice) {
                 case 1:
-                    //generarReferencias();
+                    System.out.print("Ingrese el tamaño de página (en bytes): ");
+                    int tamPagina = scanner.nextInt();
+                    System.out.print("Ingrese el número de filas de la matriz 1: ");
+                    int nf1 = scanner.nextInt();
+                    System.out.print("Ingrese el número de columnas de la matriz 1 (y filas de la matriz 2): ");
+                    int nc1 = scanner.nextInt();
+                    System.out.print("Ingrese el número de columnas de la matriz 2: ");
+                    int nc2 = scanner.nextInt();
+                    generarReferencias(tamPagina, nf1, nc1, nc2);
                     break;
                 case 2:
-                    calcularFallasDePagina();
+                    System.out.print("Ingrese el número de marcos de página: ");
+                    int numeroMarcosPagina = scanner.nextInt();
+                    System.out.print("Ingrese el nombre del archivo de referencias: ");
+                    String nombreArchivoReferencias = scanner.next();
+                    calcularFallasDePagina(numeroMarcosPagina, nombreArchivoReferencias);
                     break;
                 case 3:
                     System.out.println("Saliendo del programa.");
@@ -43,25 +55,13 @@ public class UI {
         System.out.print("Seleccione una opción: ");
     }
 
-    private static void generarReferencias() {
-        Scanner scannerReferencia = new Scanner(System.in);
-        System.out.print("Ingrese el tamaño de página (en bytes): ");
-        int tamPagina = scannerReferencia.nextInt();
-        System.out.print("Ingrese el número de filas de la matriz 1: ");
-        int nf1 = scannerReferencia.nextInt();
-        System.out.print("Ingrese el número de columnas de la matriz 1 (y filas de la matriz 2): ");
-        int nc1 = scannerReferencia.nextInt();
-        System.out.print("Ingrese el número de columnas de la matriz 2: ");
-        int nc2 = scannerReferencia.nextInt();
-        scannerReferencia.close();
+    private static void generarReferencias(int tamPagina, int nf1, int nc1, int nc2) {        
         ReferenciaGenerador referencia = new ReferenciaGenerador(nf1, nc1, nc2, tamPagina);
         referencia.generarReferencias();
     }
 
 
-    private static void calcularFallasDePagina() {
-        // Lógica para calcular el número de fallas de página
-        // Debes implementar esta lógica en una clase separada
-        // Por ejemplo, la clase PaginacionSimulador mencionada en la respuesta anterior
+    private static void calcularFallasDePagina(int numeroMarcosPagina, String nombreArchivoReferencias) {
+        
     }
 }
