@@ -30,6 +30,8 @@ public class MemoryManager {
             } else {
                 throw new IllegalArgumentException("Frame number is out of bounds.");
             }
+        } else {
+            throw new IllegalArgumentException("Page is already in memory or page table is full.");
         }
     }
 
