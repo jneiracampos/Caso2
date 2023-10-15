@@ -1,54 +1,44 @@
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.ArrayList;
 
-public class PaginacionSimulador {
-    private int numeroMarcosPagina;
-    private List<Integer> referencias;
-    private Map<Integer, Integer> paginaEnvejecimiento;
+public class PaginacionSimulador extends Thread {
+    
+    private ArrayList<Integer> referencias;
     private int fallasDePagina;
+    private MemoryManager memoryManager;
 
-    public PaginacionSimulador(int numeroMarcosPagina, List<Integer> referencias) {
-        this.numeroMarcosPagina = numeroMarcosPagina;
+    public PaginacionSimulador(ArrayList<Integer> referencias, MemoryManager memoryManager) {
         this.referencias = referencias;
-        this.paginaEnvejecimiento = new HashMap<>();
         this.fallasDePagina = 0;
-    }
-
-    public void simularPaginacion() {
-        for (int referencia : referencias) {
-            if (!paginaEnvejecimiento.containsKey(referencia)) {
-                if (paginaEnvejecimiento.size() < numeroMarcosPagina) {
-                    paginaEnvejecimiento.put(referencia, 0);
-                } else {
-                    int paginaAReemplazar = encontrarPaginaAReemplazar();
-                    paginaEnvejecimiento.remove(paginaAReemplazar);
-                    paginaEnvejecimiento.put(referencia, 0);
-                }
-                fallasDePagina++;
-            }
-
-            // Actualizar envejecimiento de las páginas en memoria
-            for (int pagina : paginaEnvejecimiento.keySet()) {
-                paginaEnvejecimiento.put(pagina, paginaEnvejecimiento.get(pagina) + 1);
-            }
-        }
-    }
-
-    private int encontrarPaginaAReemplazar() {
-        int paginaAReemplazar = -1;
-        int maxEnvejecimiento = -1;
-        for (int pagina : paginaEnvejecimiento.keySet()) {
-            int envejecimiento = paginaEnvejecimiento.get(pagina);
-            if (envejecimiento > maxEnvejecimiento) {
-                maxEnvejecimiento = envejecimiento;
-                paginaAReemplazar = pagina;
-            }
-        }
-        return paginaAReemplazar;
+        this.memoryManager = memoryManager;
     }
 
     public int getFallasDePagina() {
         return fallasDePagina;
     }
+
+    @Override
+    public void run() {
+        for (int i = 0; i < referencias.size(); i++) {
+            try {
+                Thread.sleep(2000);
+                int pageNumber = referencias.get(i);
+                if (!memoryManager.isPageInMemory(pageNumber)) {
+                    if (memoryManager.isPageTableFull()) {
+                        int pageToReplace = memoryManager.getPageToReplace();
+                        ArrayList<Integer> data = memoryManager.getDataForPageInPageTable(pageToReplace);
+                        int frameNumberToReplace = data.get(0);
+                        memoryManager.removePage(pageToReplace);
+                        memoryManager.loadPage(pageNumber, frameNumberToReplace);
+                    } else {
+                        memoryManager.loadPage(pageNumber, i);
+                    }
+                    fallasDePagina++;
+                }
+                memoryManager.setIsReferenciado(pageNumber, 1);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } 
+        }
+    }
+
 }

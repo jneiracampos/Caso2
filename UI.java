@@ -1,3 +1,4 @@
+import java.util.List;
 import java.util.Scanner;
 
 public class UI {
@@ -32,7 +33,7 @@ public class UI {
                     int numeroMarcosPagina = scanner.nextInt();
                     System.out.print("Ingrese el nombre del archivo de referencias: ");
                     String nombreArchivoReferencias = scanner.next();
-                    calcularFallasDePagina(numeroMarcosPagina, nombreArchivoReferencias);
+                    simularPaginacion(numeroMarcosPagina, nombreArchivoReferencias);
                     break;
                 case 3:
                     System.out.println("Saliendo del programa.");
@@ -60,8 +61,11 @@ public class UI {
         referencia.generarReferencias();
     }
 
-
-    private static void calcularFallasDePagina(int numeroMarcosPagina, String nombreArchivoReferencias) {
+    private static void simularPaginacion(int numeroMarcosPagina, String nombreArchivoReferencias) {
         
+    }
+
+    private List<Integer> leerReferencias(String nombreArchivoReferencias) {
+        return null;
     }
 }
