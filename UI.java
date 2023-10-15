@@ -1,5 +1,10 @@
-import java.util.List;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class UI {
     
@@ -12,7 +17,7 @@ public class UI {
 
             while (!scanner.hasNextInt()) {
                 System.out.println("Opción no válida. Por favor, seleccione una opción válida.");
-                scanner.next(); // Descarta la entrada no válida
+                scanner.next();
             }
             choice = scanner.nextInt();
 
@@ -42,7 +47,7 @@ public class UI {
                     System.out.println("Opción no válida. Por favor, seleccione una opción válida.");
             }
 
-            scanner.nextLine(); // Descarta cualquier entrada adicional
+            scanner.nextLine();
         } while (choice != 3);
 
         scanner.close();
@@ -62,10 +67,36 @@ public class UI {
     }
 
     private static void simularPaginacion(int numeroMarcosPagina, String nombreArchivoReferencias) {
-        
+        ArrayList<Integer> referencias = leerReferencias(nombreArchivoReferencias);
+        MemoryManager memoryManager = new MemoryManager(numeroMarcosPagina, referencias.get(0));
+        PaginacionSimulador paginacionSimulador = new PaginacionSimulador(referencias, memoryManager);
+        paginacionSimulador.start();
+        EnvejecimientoSimulador envejecimientoSimulador = new EnvejecimientoSimulador(memoryManager);
+        envejecimientoSimulador.start();
     }
 
-    private List<Integer> leerReferencias(String nombreArchivoReferencias) {
-        return null;
+    private static ArrayList<Integer> leerReferencias(String nombreArchivo) {
+        ArrayList<Integer> referencias = new ArrayList<Integer>();
+        try (BufferedReader br = new BufferedReader(new FileReader(nombreArchivo))) {
+            String line;
+            Pattern pattern = Pattern.compile("\\[\\w+-\\w+-\\w+\\], (\\d+), \\w+");
+
+            while ((line = br.readLine()) != null) {
+                if (line.startsWith("NP=")) {
+                    int npValue = Integer.parseInt(line.substring(3));
+                    referencias.add(npValue);
+                } else {
+                    Matcher matcher = pattern.matcher(line);
+                    if (matcher.find()) {
+                        int number = Integer.parseInt(matcher.group(1));
+                        referencias.add(number);
+                    }
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        System.out.println("Extracted Values: " + referencias);
+        return referencias;
     }
 }

@@ -3,8 +3,8 @@ import java.util.ArrayList;
 public class PaginacionSimulador extends Thread {
     
     private ArrayList<Integer> referencias;
-    private int fallasDePagina;
     private MemoryManager memoryManager;
+    private int fallasDePagina;
 
     public PaginacionSimulador(ArrayList<Integer> referencias, MemoryManager memoryManager) {
         this.referencias = referencias;
@@ -20,7 +20,7 @@ public class PaginacionSimulador extends Thread {
     public void run() {
         for (int i = 0; i < referencias.size(); i++) {
             try {
-                Thread.sleep(2000);
+                Thread.sleep(2);
                 int pageNumber = referencias.get(i);
                 if (!memoryManager.isPageInMemory(pageNumber)) {
                     if (memoryManager.isPageTableFull()) {
@@ -39,6 +39,8 @@ public class PaginacionSimulador extends Thread {
                 e.printStackTrace();
             } 
         }
+        memoryManager.setFin(true);
+        System.out.println(getFallasDePagina());
     }
 
 }
