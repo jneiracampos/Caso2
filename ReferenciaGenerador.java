@@ -29,7 +29,7 @@ public class ReferenciaGenerador {
             writer.println("NF=" + nf1);
             writer.println("NC1=" + nc1);
             writer.println("NC2=" + nc2);
-            writer.println("NR=" + ((nc1 + nc2) * nc2) * nf1);
+            writer.println("NR=" + ((((nc1 + nc1) * nc2) * nf1) + (nf1 * nc2)));
             writer.println("NP=" + numeroDePaginas);
 
             MultiplicacionMatrices multiplicacionMatrices = new MultiplicacionMatrices();

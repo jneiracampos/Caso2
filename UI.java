@@ -68,11 +68,18 @@ public class UI {
 
     private static void simularPaginacion(int numeroMarcosPagina, String nombreArchivoReferencias) {
         ArrayList<Integer> referencias = leerReferencias(nombreArchivoReferencias);
-        MemoryManager memoryManager = new MemoryManager(numeroMarcosPagina, referencias.get(0));
+        MemoryManager memoryManager = new MemoryManager(numeroMarcosPagina, referencias.get(referencias.size() - 1));
         PaginacionSimulador paginacionSimulador = new PaginacionSimulador(referencias, memoryManager);
         paginacionSimulador.start();
         EnvejecimientoSimulador envejecimientoSimulador = new EnvejecimientoSimulador(memoryManager);
         envejecimientoSimulador.start();
+        try {
+            paginacionSimulador.join();
+            envejecimientoSimulador.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        System.out.println("Fallas de página: " + memoryManager.getPageFault());
     }
 
     private static ArrayList<Integer> leerReferencias(String nombreArchivo) {
@@ -80,11 +87,11 @@ public class UI {
         try (BufferedReader br = new BufferedReader(new FileReader(nombreArchivo))) {
             String line;
             Pattern pattern = Pattern.compile("\\[\\w+-\\w+-\\w+\\], (\\d+), \\w+");
+            int npValue = 0;
 
             while ((line = br.readLine()) != null) {
                 if (line.startsWith("NP=")) {
-                    int npValue = Integer.parseInt(line.substring(3));
-                    referencias.add(npValue);
+                    npValue = Integer.parseInt(line.substring(3));
                 } else {
                     Matcher matcher = pattern.matcher(line);
                     if (matcher.find()) {
@@ -93,10 +100,11 @@ public class UI {
                     }
                 }
             }
+            referencias.add(npValue);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        System.out.println("Extracted Values: " + referencias);
+        //System.out.println("Extracted Values: " + referencias);
         return referencias;
     }
 }
