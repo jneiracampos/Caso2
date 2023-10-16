@@ -19,7 +19,6 @@ public class PaginacionSimulador extends Thread {
                     memoryManager.updatePageTable(pageNumber, i);
                 }
                 Thread.sleep(2);
-                //System.out.println("Hola");
             } catch (InterruptedException e) {
                 e.printStackTrace();
             } 

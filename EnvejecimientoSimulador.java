@@ -14,7 +14,6 @@ public class EnvejecimientoSimulador extends Thread {
                     memoryManager.updatePageToReplace();
                 }
                 Thread.sleep(1);
-                //System.out.println("Chao");
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
